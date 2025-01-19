@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from "next/image";
 import type {Comment, Reply, User} from "@/mock-data/data"
+import IconButton from "@/components/IconButton";
 
 
 type CommentCardProps = {
@@ -70,21 +71,16 @@ function Footer({user, author, score}: FooterProps) {
             </button>
         </div>
         {user.username == author.username ? (
-            <div>
-                <button>
-                    <Image src={"/images/icon-delete.svg"} alt={""} height={10} width={10}/>
-                    <span>Delete</span>
-                </button>
-                <button>
-                    <Image src={"/images/icon-delete.svg"} alt={""} height={10} width={10}/>
-                    <span>Delete</span>
-                </button>
+            <div className={"flex gap-4"}>
+                <IconButton label={"Delete"} iconPath={"/images/icon-delete.svg"}
+                            labelClassName={"text-soft-red"}/>
+                <IconButton label={"Edit"} iconPath={"/images/icon-edit.svg"} labelClassName={"text-moderate-blue"}/>
             </div>
         ) : (
-            <div className={"flex items-baseline gap-2"}>
-                <Image src={"/images/icon-reply.svg"} alt={""} height={10} width={10}/>
-                <span className={"text-moderate-blue font-[500]"}>Reply</span>
-            </div>
+            <IconButton
+                label={"Reply"}
+                iconPath={"/images/icon-reply.svg"}
+                labelClassName={"text-moderate-blue"}/>
         )}
     </div>
 }
