@@ -47,10 +47,15 @@ function Header({user, author}: HeaderProps) {
 
 type ContentProps = {
     content: string
+    // The username of the user being replied to
+    replyingTo?: string
 }
 
-function Content({content}: ContentProps) {
-    return <div className={"py-4 text-grayish-blue"}>{content}</div>
+function Content({content, replyingTo}: ContentProps) {
+    return <div className={"py-4 text-grayish-blue"}>
+        {replyingTo && <span className={"text-moderate-blue font-[500]"}>@{replyingTo}</span>}
+        <span>&nbsp;{content}</span>
+    </div>
 }
 
 type FooterProps = {
@@ -93,7 +98,7 @@ type ReplyCardProps = {
 function ReplyCard({user, reply}: ReplyCardProps) {
     return <div className={"bg-white p-4 rounded-xl my-4"}>
         <Header user={user} author={reply.user}/>
-        <Content content={reply.content}/>
+        <Content content={reply.content} replyingTo={reply.replyingTo}/>
         <Footer user={user} author={reply.user} score={reply.score}/>
     </div>
 }
