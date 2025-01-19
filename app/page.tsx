@@ -10,7 +10,7 @@ export default function Home() {
         "username": "juliusomo"
     }
     return (
-        <div className={"p-4 flex flex-col h-full"}>
+        <div className={"p-4 flex flex-col h-min-full"}>
             <div className={"flex flex-col gap-4"}>
                 {comments.map((comment) => (
                     <CommentCard key={comment.id} user={user} comment={comment}/>
