@@ -32,15 +32,15 @@ type HeaderProps = {
 }
 
 function Header({user, author}: HeaderProps) {
-    return <div className={"flex items-center gap-6"}>
+    return <div className={"flex items-center gap-4"}>
         <Image
             src={author.image.png}
             alt={`${author.username} profile`}
             width={40}
             height={40}/>
-        {user.username == author.username &&
-            <span className={"p-2 bg-moderate-blue text-white"}>You</span>}
         <span className={"font-bold"}>{author.username}</span>
+        {user.username == author.username &&
+            <span className={"py-1 px-2 text-sm bg-moderate-blue rounded text-white font-[500]"}>you</span>}
         <span className={"text-grayish-blue font-light"}>1 month ago</span>
     </div>
 }
