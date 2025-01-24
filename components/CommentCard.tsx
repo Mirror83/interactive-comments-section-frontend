@@ -7,20 +7,22 @@ import IconButton from "@/components/IconButton";
 type CommentCardProps = {
     user: User,
     comment: Comment;
+    onDelete?: () => void;
 }
 
-function CommentCard({user, comment}: CommentCardProps) {
+function CommentCard({user, comment, onDelete}: CommentCardProps) {
     return (
         <div>
             <div className={"bg-white p-4 rounded-xl"}>
                 <Header user={user} author={comment.user}/>
                 <Content content={comment.content}/>
-                <Footer user={user} author={comment.user} score={comment.score}/>
+                <Footer user={user} author={comment.user} score={comment.score} onDelete={onDelete}/>
             </div>
             <div className={"border-l-4 border-light-gray ps-4"}>
                 {comment.replies.map(reply => (
-                    <ReplyCard key={reply.id} user={user} reply={reply}/>
-                ))}
+                        <ReplyCard key={reply.id} user={user} reply={reply} onDelete={onDelete}/>
+                    )
+                )}
             </div>
         </div>
     );
@@ -61,10 +63,11 @@ function Content({content, replyingTo}: ContentProps) {
 type FooterProps = {
     user: User,
     author: User,
-    score: number
+    score: number,
+    onDelete?: () => void
 }
 
-function Footer({user, author, score}: FooterProps) {
+function Footer({user, author, score, onDelete}: FooterProps) {
     return <div className={"flex justify-between items-center"}>
         <div className={"flex bg-light-gray items-center gap-4 rounded-lg py-2 px-4"}>
             <button>
@@ -78,7 +81,7 @@ function Footer({user, author, score}: FooterProps) {
         {user.username == author.username ? (
             <div className={"flex gap-4"}>
                 <IconButton label={"Delete"} iconPath={"/images/icon-delete.svg"}
-                            labelClassName={"text-soft-red"}/>
+                            labelClassName={"text-soft-red"} onClick={onDelete}/>
                 <IconButton label={"Edit"} iconPath={"/images/icon-edit.svg"} labelClassName={"text-moderate-blue"}/>
             </div>
         ) : (
@@ -93,13 +96,14 @@ function Footer({user, author, score}: FooterProps) {
 type ReplyCardProps = {
     user: User,
     reply: Reply,
+    onDelete?: () => void
 }
 
-function ReplyCard({user, reply}: ReplyCardProps) {
+function ReplyCard({user, reply, onDelete}: ReplyCardProps) {
     return <div className={"bg-white p-4 rounded-xl my-4"}>
         <Header user={user} author={reply.user}/>
         <Content content={reply.content} replyingTo={reply.replyingTo}/>
-        <Footer user={user} author={reply.user} score={reply.score}/>
+        <Footer user={user} author={reply.user} score={reply.score} onDelete={onDelete}/>
     </div>
 }
 
