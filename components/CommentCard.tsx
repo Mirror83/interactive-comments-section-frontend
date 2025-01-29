@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import Image from "next/image";
 import type {Comment, Reply, User} from "@/mock-data/data"
 import IconButton from "@/components/IconButton";
+import AppContext from "@/context/app-context";
 
 
 type CommentCardProps = {
@@ -10,17 +11,17 @@ type CommentCardProps = {
     onDelete?: () => void;
 }
 
-function CommentCard({user, comment, onDelete}: CommentCardProps) {
+function CommentCard({comment, onDelete}: CommentCardProps) {
     return (
         <div>
             <div className={"bg-white p-4 rounded-xl"}>
-                <Header user={user} author={comment.user}/>
+                <Header author={comment.user}/>
                 <Content content={comment.content}/>
-                <Footer user={user} author={comment.user} score={comment.score} onDelete={onDelete}/>
+                <Footer author={comment.user} score={comment.score}/>
             </div>
             <div className={"border-l-4 border-light-gray ps-4"}>
                 {comment.replies.map(reply => (
-                        <ReplyCard key={reply.id} user={user} reply={reply} onDelete={onDelete}/>
+                        <ReplyCard key={reply.id} reply={reply} onDelete={onDelete}/>
                     )
                 )}
             </div>
@@ -29,11 +30,12 @@ function CommentCard({user, comment, onDelete}: CommentCardProps) {
 }
 
 type HeaderProps = {
-    user: User,
     author: User
 }
 
-function Header({user, author}: HeaderProps) {
+function Header({author}: HeaderProps) {
+    const {user} = useContext(AppContext);
+
     return <div className={"flex items-center gap-4"}>
         <Image
             src={author.image.png}
@@ -41,7 +43,7 @@ function Header({user, author}: HeaderProps) {
             width={40}
             height={40}/>
         <span className={"font-bold"}>{author.username}</span>
-        {user.username == author.username &&
+        {user?.username == author.username &&
             <span className={"py-1 px-2 text-sm bg-moderate-blue rounded text-white font-[500]"}>you</span>}
         <span className={"text-grayish-blue font-light"}>1 month ago</span>
     </div>
@@ -61,13 +63,14 @@ function Content({content, replyingTo}: ContentProps) {
 }
 
 type FooterProps = {
-    user: User,
     author: User,
     score: number,
     onDelete?: () => void
 }
 
-function Footer({user, author, score, onDelete}: FooterProps) {
+function Footer({author, score}: FooterProps) {
+    const {user, openDeleteModal, onEdit} = useContext(AppContext)
+
     return <div className={"flex justify-between items-center"}>
         <div className={"flex bg-light-gray items-center gap-4 rounded-lg py-2 px-4"}>
             <button>
@@ -78,32 +81,34 @@ function Footer({user, author, score, onDelete}: FooterProps) {
                 <Image src={"/images/icon-plus.svg"} alt={"up-vote"} height={10} width={10}/>
             </button>
         </div>
-        {user.username == author.username ? (
+        {user?.username == author.username ? (
             <div className={"flex gap-4"}>
                 <IconButton label={"Delete"} iconPath={"/images/icon-delete.svg"}
-                            labelClassName={"text-soft-red"} onClick={onDelete}/>
-                <IconButton label={"Edit"} iconPath={"/images/icon-edit.svg"} labelClassName={"text-moderate-blue"}/>
+                            labelClassName={"text-soft-red"} onClick={openDeleteModal}/>
+                <IconButton label={"Edit"} iconPath={"/images/icon-edit.svg"}
+                            labelClassName={"text-moderate-blue"} onClick={onEdit}
+                />
             </div>
         ) : (
             <IconButton
                 label={"Reply"}
                 iconPath={"/images/icon-reply.svg"}
-                labelClassName={"text-moderate-blue"}/>
+                labelClassName={"text-moderate-blue"}
+            />
         )}
     </div>
 }
 
 type ReplyCardProps = {
-    user: User,
     reply: Reply,
     onDelete?: () => void
 }
 
-function ReplyCard({user, reply, onDelete}: ReplyCardProps) {
+function ReplyCard({reply, onDelete}: ReplyCardProps) {
     return <div className={"bg-white p-4 rounded-xl my-4"}>
-        <Header user={user} author={reply.user}/>
+        <Header author={reply.user}/>
         <Content content={reply.content} replyingTo={reply.replyingTo}/>
-        <Footer user={user} author={reply.user} score={reply.score} onDelete={onDelete}/>
+        <Footer author={reply.user} score={reply.score} onDelete={onDelete}/>
     </div>
 }
 
