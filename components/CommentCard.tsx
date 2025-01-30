@@ -17,11 +17,11 @@ function CommentCard({comment, onDelete}: CommentCardProps) {
             <div className={"bg-white p-4 rounded-xl"}>
                 <Header author={comment.user}/>
                 <Content content={comment.content}/>
-                <Footer author={comment.user} score={comment.score}/>
+                <Footer commentId={comment.id} author={comment.user} score={comment.score}/>
             </div>
             <div className={"border-l-4 border-light-gray ps-4"}>
                 {comment.replies.map(reply => (
-                        <ReplyCard key={reply.id} reply={reply} onDelete={onDelete}/>
+                        <ReplyCard key={reply.id} commentId={comment.id} reply={reply} onDelete={onDelete}/>
                     )
                 )}
             </div>
@@ -63,13 +63,15 @@ function Content({content, replyingTo}: ContentProps) {
 }
 
 type FooterProps = {
+    commentId: number,
+    replyId?: number,
     author: User,
     score: number,
     onDelete?: () => void
 }
 
-function Footer({author, score}: FooterProps) {
-    const {user, openDeleteModal, onEdit} = useContext(AppContext)
+function Footer({commentId, replyId, author, score}: FooterProps) {
+    const {user, openDeleteModal, onEditComment} = useContext(AppContext)
 
     return <div className={"flex justify-between items-center"}>
         <div className={"flex bg-light-gray items-center gap-4 rounded-lg py-2 px-4"}>
@@ -84,9 +86,11 @@ function Footer({author, score}: FooterProps) {
         {user?.username == author.username ? (
             <div className={"flex gap-4"}>
                 <IconButton label={"Delete"} iconPath={"/images/icon-delete.svg"}
-                            labelClassName={"text-soft-red"} onClick={openDeleteModal}/>
+                            labelClassName={"text-soft-red"}
+                            onClick={() => openDeleteModal(commentId, replyId)}/>
                 <IconButton label={"Edit"} iconPath={"/images/icon-edit.svg"}
-                            labelClassName={"text-moderate-blue"} onClick={onEdit}
+                            labelClassName={"text-moderate-blue"}
+                            onClick={() => onEditComment(commentId)}
                 />
             </div>
         ) : (
@@ -100,15 +104,16 @@ function Footer({author, score}: FooterProps) {
 }
 
 type ReplyCardProps = {
+    commentId: number,
     reply: Reply,
     onDelete?: () => void
 }
 
-function ReplyCard({reply, onDelete}: ReplyCardProps) {
+function ReplyCard({commentId, reply, onDelete}: ReplyCardProps) {
     return <div className={"bg-white p-4 rounded-xl my-4"}>
         <Header author={reply.user}/>
         <Content content={reply.content} replyingTo={reply.replyingTo}/>
-        <Footer author={reply.user} score={reply.score} onDelete={onDelete}/>
+        <Footer commentId={commentId} replyId={reply.id} author={reply.user} score={reply.score} onDelete={onDelete}/>
     </div>
 }
 

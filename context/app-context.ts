@@ -3,18 +3,16 @@ import React from "react";
 
 type AppContextObject = {
     user?: User,
-    openDeleteModal: () => void,
-    onEdit: () => void,
+    openDeleteModal: (id: number, replyId: number | undefined) => void,
+    onEditComment: (id: number) => void,
 }
 
-const contextDefaults = {
+const AppContext = React.createContext<AppContextObject>({
     user: undefined,
-    openDeleteModal: () => {
+    openDeleteModal() {
     },
-    onEdit: () => {
-    },
-}
-
-const AppContext = React.createContext<AppContextObject>(contextDefaults);
+    onEditComment() {
+    }
+});
 
 export default AppContext
