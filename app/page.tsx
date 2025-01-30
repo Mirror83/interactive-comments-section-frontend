@@ -1,7 +1,7 @@
 "use client";
 
 import CommentCard from "@/components/CommentCard";
-import {comments as allComments, User} from "@/mock-data/data";
+import {comments as allComments, User, Comment} from "@/mock-data/data";
 import CommentInput from "@/components/CommentInput";
 import {DeleteConfirmationModal} from "@/components/Modal";
 import React, {useState} from "react";
@@ -26,8 +26,6 @@ export default function Home() {
      * is the target for deletion.
      */
     const [targetMsg, setTargetMsg] = useState<{ commentId: number, replyId: number | undefined }>();
-
-    const [commentInput, setCommentInput] = useState("");
 
     function closeDeleteModal() {
         setTargetMsg(undefined);
@@ -73,6 +71,18 @@ export default function Home() {
         closeDeleteModal();
     }
 
+    function addComment(content: string) {
+        const comment: Comment = {
+            user,
+            content,
+            createdAt: Date(),
+            score: 0,
+            replies: [],
+            id: comments[comments.length - 1].id + 1
+        }
+        setComments(prevComments => [...prevComments, comment]);
+    }
+
     return (
         <AppContext value={{user: user, openDeleteModal, onEditComment}}>
             <div className={"p-4 flex flex-col h-screen"}>
@@ -86,10 +96,11 @@ export default function Home() {
                         )
                     )}
                 </div>
-                <CommentInput user={user} value={commentInput} setValue={setCommentInput}/>
+                <CommentInput user={user} addComment={addComment}/>
                 <DeleteConfirmationModal isVisible={isModalVisible}
                                          onClose={closeDeleteModal}
-                                         onConfirm={() => onConfirmMsgDeletion(targetMsg!.commentId, targetMsg!.replyId)}/>
+                                         onConfirm={() =>
+                                             onConfirmMsgDeletion(targetMsg!.commentId, targetMsg!.replyId)}/>
             </div>
         </AppContext>
 
