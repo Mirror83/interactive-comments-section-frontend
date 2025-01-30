@@ -20,7 +20,7 @@ function Modal({isVisible, onClose, children}: ModalProps) {
     );
 }
 
-export function DeleteConfirmationModal(props: ModalProps) {
+export function DeleteConfirmationModal(props: Omit<ModalProps, "children">) {
     return <Modal {...props}>
         <div className={"flex flex-col h-full items-center justify-center px-4"}>
             <div className={"bg-white rounded-xl flex flex-col gap-4 p-8"}
