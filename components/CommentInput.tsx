@@ -3,14 +3,21 @@ import Image from "next/image";
 
 type CommentInputProps = {
     user: User;
+    value: string;
+    setValue: (newValue: string) => void;
 }
 
-export default function CommentInput({user}: CommentInputProps) {
+export default function CommentInput({user, value, setValue}: CommentInputProps) {
     return <div className={"flex flex-col  gap-8 bg-white rounded-xl p-4 mt-4"}>
                     <textarea
                         className={"h-24 border-2 rounded-xl p-4 border-grayish-blue"}
                         name={"comment"}
-                        placeholder={"Add a comment..."}/>
+                        placeholder={"Add a comment..."}
+                        value={value}
+                        onChange={(event) => {
+                            setValue(event.target.value);
+                        }}
+                    />
         <div className={"flex justify-between items-center gap-4"}>
             <Image src={user.image.png} alt={`${user.username} profile avatar`} height={40} width={40}/>
             <button className={"bg-moderate-blue  text-white rounded-lg"}>
