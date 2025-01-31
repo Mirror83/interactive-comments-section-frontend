@@ -39,6 +39,41 @@ export default function Home() {
         console.log({commentId, replyId});
     }
 
+    function upvoteMessage(commentId: number, replyId: number | undefined) {
+        if (replyId) {
+            upvoteReply(commentId, replyId);
+        } else {
+            upvoteComment(commentId);
+        }
+    }
+
+    function upvoteComment(commentId: number) {
+        setComments(prevComments => prevComments.map(comment => {
+            if (comment.id === commentId) {
+                return {...comment, score: comment.score + 1}
+            } else {
+                return comment;
+            }
+        }))
+    }
+
+    function upvoteReply(commentId: number, replyId: number) {
+        setComments(prevComments => prevComments.map(comment => {
+            if (comment.id === commentId) {
+                const replies = comment.replies.map(reply => {
+                    if (reply.id === replyId) {
+                        return {...reply, score: reply.score + 1}
+                    } else {
+                        return reply;
+                    }
+                })
+                return {...comment, replies}
+            } else {
+                return comment
+            }
+        }))
+    }
+
     function onEditComment() {
         console.log("Editing comment...");
     }
@@ -84,7 +119,7 @@ export default function Home() {
     }
 
     return (
-        <AppContext value={{user: user, openDeleteModal, onEditComment}}>
+        <AppContext value={{user: user, openDeleteModal, onEditComment, upvoteMessage}}>
             <div className={"p-4 flex flex-col h-screen"}>
                 <div className={"flex flex-1 flex-col gap-4 overflow-y-scroll"}>
                     {comments.map((comment) => (

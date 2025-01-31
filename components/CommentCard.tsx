@@ -71,7 +71,7 @@ type FooterProps = {
 }
 
 function Footer({commentId, replyId, author, score}: FooterProps) {
-    const {user, openDeleteModal, onEditComment} = useContext(AppContext)
+    const {user, openDeleteModal, onEditComment, upvoteMessage} = useContext(AppContext)
 
     return <div className={"flex justify-between items-center"}>
         <div className={"flex bg-light-gray items-center gap-4 rounded-lg py-2 px-4"}>
@@ -79,7 +79,7 @@ function Footer({commentId, replyId, author, score}: FooterProps) {
                 <Image src={"/images/icon-minus.svg"} alt={"down-vote"} height={10} width={10}/>
             </button>
             <span className={"text-moderate-blue font-[500]"}>{score}</span>
-            <button>
+            <button onClick={() => upvoteMessage(commentId, replyId)}>
                 <Image src={"/images/icon-plus.svg"} alt={"up-vote"} height={10} width={10}/>
             </button>
         </div>
