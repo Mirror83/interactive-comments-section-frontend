@@ -1,11 +1,11 @@
 "use client";
 
 import CommentCard from "@/components/CommentCard";
-import {comments as allComments, User, Comment} from "@/mock-data/data";
+import {Comment, comments as allComments, User} from "@/mock-data/data";
 import CommentInput from "@/components/CommentInput";
 import {DeleteConfirmationModal} from "@/components/Modal";
 import React, {useState} from "react";
-import AppContext from "@/context/app-context";
+import AppContext, {VoteType} from "@/context/app-context";
 
 const user: User = {
     "image": {
@@ -17,6 +17,7 @@ const user: User = {
 
 export default function Home() {
     const [isModalVisible, setIsModalVisible] = useState(false);
+    
     const [comments, setComments] = useState(allComments);
 
     /**
@@ -39,30 +40,32 @@ export default function Home() {
         console.log({commentId, replyId});
     }
 
-    function upvoteMessage(commentId: number, replyId: number | undefined) {
+    function voteMessage(commentId: number, replyId: number | undefined, voteType: VoteType) {
         if (replyId) {
-            upvoteReply(commentId, replyId);
+            voteReply(commentId, replyId, voteType);
         } else {
-            upvoteComment(commentId);
+            voteComment(commentId, voteType);
         }
     }
 
-    function upvoteComment(commentId: number) {
+    function voteComment(commentId: number, voteType: VoteType) {
         setComments(prevComments => prevComments.map(comment => {
             if (comment.id === commentId) {
-                return {...comment, score: comment.score + 1}
+                const score = voteType === VoteType.UP_VOTE ? comment.score + 1 : comment.score - 1;
+                return {...comment, score}
             } else {
                 return comment;
             }
         }))
     }
 
-    function upvoteReply(commentId: number, replyId: number) {
+    function voteReply(commentId: number, replyId: number, voteType: VoteType) {
         setComments(prevComments => prevComments.map(comment => {
             if (comment.id === commentId) {
                 const replies = comment.replies.map(reply => {
                     if (reply.id === replyId) {
-                        return {...reply, score: reply.score + 1}
+                        const score = voteType === VoteType.UP_VOTE ? comment.score + 1 : comment.score - 1;
+                        return {...reply, score}
                     } else {
                         return reply;
                     }
@@ -119,7 +122,7 @@ export default function Home() {
     }
 
     return (
-        <AppContext value={{user: user, openDeleteModal, onEditComment, upvoteMessage}}>
+        <AppContext value={{user: user, openDeleteModal, onEditComment, voteMessage}}>
             <div className={"p-4 flex flex-col h-screen"}>
                 <div className={"flex flex-1 flex-col gap-4 overflow-y-scroll"}>
                     {comments.map((comment) => (
