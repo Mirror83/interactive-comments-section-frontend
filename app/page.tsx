@@ -17,7 +17,7 @@ const user: User = {
 
 export default function Home() {
     const [isModalVisible, setIsModalVisible] = useState(false);
-    
+
     const [comments, setComments] = useState(allComments);
 
     /**
@@ -64,16 +64,14 @@ export default function Home() {
             if (comment.id === commentId) {
                 const replies = comment.replies.map(reply => {
                     if (reply.id === replyId) {
-                        const score = voteType === VoteType.UP_VOTE ? comment.score + 1 : comment.score - 1;
+                        const score = voteType === VoteType.UP_VOTE ? reply.score + 1 : reply.score - 1;
                         return {...reply, score}
-                    } else {
-                        return reply;
                     }
+                    return reply
                 })
                 return {...comment, replies}
-            } else {
-                return comment
             }
+            return comment
         }))
     }
 
