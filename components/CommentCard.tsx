@@ -1,8 +1,9 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import Image from "next/image";
 import type {Comment, Reply, User} from "@/mock-data/data"
 import IconButton from "@/components/IconButton";
 import AppContext, {VoteType} from "@/context/app-context";
+import ReplyInput from "@/components/ReplyInput";
 
 
 type CommentCardProps = {
@@ -11,14 +12,20 @@ type CommentCardProps = {
     onDelete?: () => void;
 }
 
-function CommentCard({comment, onDelete}: CommentCardProps) {
+function CommentCard({user, comment, onDelete}: CommentCardProps) {
+    const [replyInputIsVisible, setReplyInputIsVisible] = useState(false)
+
     return (
         <div>
             <div className={"bg-white p-4 rounded-xl"}>
                 <Header author={comment.user}/>
                 <Content content={comment.content}/>
-                <Footer commentId={comment.id} author={comment.user} score={comment.score}/>
+                <Footer commentId={comment.id} author={comment.user} score={comment.score}
+                        toggleReplyInputVisibility={() => setReplyInputIsVisible(prev => !prev)}/>
             </div>
+            <ReplyInput isVisible={replyInputIsVisible} replyingTo={comment.user} user={user} commentId={comment.id}
+                        addReply={() => setReplyInputIsVisible(false)}/>
+
             <div className={"border-l-4 border-light-gray ps-4"}>
                 {comment.replies.map(reply => (
                         <ReplyCard key={reply.id} commentId={comment.id} reply={reply} onDelete={onDelete}/>
@@ -67,10 +74,11 @@ type FooterProps = {
     replyId?: number,
     author: User,
     score: number,
-    onDelete?: () => void
+    onDelete?: () => void,
+    toggleReplyInputVisibility: () => void,
 }
 
-function Footer({commentId, replyId, author, score}: FooterProps) {
+function Footer({commentId, replyId, author, score, toggleReplyInputVisibility}: FooterProps) {
     const {user, openDeleteModal, onEditComment, voteMessage} = useContext(AppContext)
 
     return <div className={"flex justify-between items-center"}>
@@ -98,6 +106,7 @@ function Footer({commentId, replyId, author, score}: FooterProps) {
                 label={"Reply"}
                 iconPath={"/images/icon-reply.svg"}
                 labelClassName={"text-moderate-blue"}
+                onClick={toggleReplyInputVisibility}
             />
         )}
     </div>
@@ -110,10 +119,21 @@ type ReplyCardProps = {
 }
 
 function ReplyCard({commentId, reply, onDelete}: ReplyCardProps) {
-    return <div className={"bg-white p-4 rounded-xl my-4"}>
-        <Header author={reply.user}/>
-        <Content content={reply.content} replyingTo={reply.replyingTo}/>
-        <Footer commentId={commentId} replyId={reply.id} author={reply.user} score={reply.score} onDelete={onDelete}/>
+    const [replyInputIsVisible, setReplyInputIsVisible] = useState(false)
+    const {user} = useContext(AppContext)
+
+    return <div>
+        <div className={"bg-white p-4 rounded-xl my-4"}>
+            <Header author={reply.user}/>
+            <Content content={reply.content} replyingTo={reply.replyingTo}/>
+            <Footer commentId={commentId} replyId={reply.id}
+                    author={reply.user} score={reply.score}
+                    onDelete={onDelete}
+                    toggleReplyInputVisibility={() => setReplyInputIsVisible(prev => !prev)}/>
+        </div>
+        <ReplyInput isVisible={replyInputIsVisible} replyingTo={reply.user}
+                    user={user!} commentId={commentId}
+                    addReply={() => setReplyInputIsVisible(false)}/>
     </div>
 }
 
