@@ -11,6 +11,7 @@ type AppContextObject = {
     openDeleteModal: (commentId: number, replyId: number | undefined) => void,
     voteMessage: (commentId: number, replyId: number | undefined, voteType: VoteType) => void,
     onEditComment: (commentId: number) => void,
+    addReply: (content: string, commentId: number) => void,
 }
 
 const AppContext = React.createContext<AppContextObject>({
@@ -20,6 +21,8 @@ const AppContext = React.createContext<AppContextObject>({
     voteMessage() {
     },
     onEditComment() {
+    },
+    addReply() {
     }
 });
 

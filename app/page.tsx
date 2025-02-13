@@ -1,7 +1,7 @@
 "use client";
 
 import CommentCard from "@/components/CommentCard";
-import {Comment, comments as allComments, User} from "@/mock-data/data";
+import {Comment, comments as allComments, Reply, User} from "@/mock-data/data";
 import CommentInput from "@/components/CommentInput";
 import {DeleteConfirmationModal} from "@/components/Modal";
 import React, {useState} from "react";
@@ -119,8 +119,27 @@ export default function Home() {
         setComments(prevComments => [...prevComments, comment]);
     }
 
+    function addReply(content: string, commentId: number) {
+        setComments(comments => comments.map(comment => {
+            if (comment.id === commentId) {
+                const replies = [...comment.replies]
+                const reply: Reply = {
+                    user,
+                    content,
+                    createdAt: Date(),
+                    score: 0,
+                    id: replies.length > 0 ? replies[replies.length - 1].id + 1 : 1,
+                    replyingTo: comment.user.username
+                }
+                replies.push(reply)
+                return {...comment, replies}
+            }
+            return comment
+        }))
+    }
+
     return (
-        <AppContext value={{user: user, openDeleteModal, onEditComment, voteMessage}}>
+        <AppContext value={{user: user, openDeleteModal, onEditComment, voteMessage, addReply}}>
             <div className={"p-4 flex flex-col h-screen"}>
                 <div className={"flex flex-1 flex-col gap-4 overflow-y-scroll"}>
                     {comments.map((comment) => (

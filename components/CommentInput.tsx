@@ -19,7 +19,7 @@ export default function CommentInput({user, addComment}: CommentInputProps) {
 
     return <div className={"flex flex-col  gap-8 bg-white rounded-xl p-4 mt-4"}>
         <textarea
-            className={"h-24 border-2 rounded-xl p-4 border-grayish-blue"}
+            className={"h-24 border rounded-xl p-4 border-grayish-blue outline-none"}
             name={"comment"}
             placeholder={"Add a comment..."}
             value={commentInput}

@@ -14,6 +14,8 @@ type CommentCardProps = {
 
 function CommentCard({user, comment, onDelete}: CommentCardProps) {
     const [replyInputIsVisible, setReplyInputIsVisible] = useState(false)
+    const {addReply} = useContext(AppContext)
+
 
     return (
         <div>
@@ -24,7 +26,11 @@ function CommentCard({user, comment, onDelete}: CommentCardProps) {
                         toggleReplyInputVisibility={() => setReplyInputIsVisible(prev => !prev)}/>
             </div>
             <ReplyInput isVisible={replyInputIsVisible} replyingTo={comment.user} user={user} commentId={comment.id}
-                        addReply={() => setReplyInputIsVisible(false)}/>
+                        addReply={(content, commentId) => {
+                            addReply(content, commentId)
+                            setReplyInputIsVisible(false)
+                        }
+                        }/>
 
             <div className={"border-l-4 border-light-gray ps-4"}>
                 {comment.replies.map(reply => (
@@ -120,7 +126,7 @@ type ReplyCardProps = {
 
 function ReplyCard({commentId, reply, onDelete}: ReplyCardProps) {
     const [replyInputIsVisible, setReplyInputIsVisible] = useState(false)
-    const {user} = useContext(AppContext)
+    const {user, addReply} = useContext(AppContext)
 
     return <div>
         <div className={"bg-white p-4 rounded-xl my-4"}>
@@ -133,7 +139,11 @@ function ReplyCard({commentId, reply, onDelete}: ReplyCardProps) {
         </div>
         <ReplyInput isVisible={replyInputIsVisible} replyingTo={reply.user}
                     user={user!} commentId={commentId}
-                    addReply={() => setReplyInputIsVisible(false)}/>
+                    addReply={(content, commentId) => {
+                        addReply(content, commentId)
+                        setReplyInputIsVisible(false)
+                    }
+                    }/>
     </div>
 }
 
