@@ -4,7 +4,8 @@ import type {Comment, Reply, User} from "@/mock-data/data"
 import IconButton from "@/components/IconButton";
 import AppContext, {VoteType} from "@/context/app-context";
 import ReplyInput from "@/components/ReplyInput";
-
+import {EditorContent, useEditor} from "@tiptap/react";
+import {StarterKit} from "@tiptap/starter-kit";
 
 type CommentCardProps = {
     user: User,
@@ -14,16 +15,43 @@ type CommentCardProps = {
 
 function CommentCard({user, comment, onDelete}: CommentCardProps) {
     const [replyInputIsVisible, setReplyInputIsVisible] = useState(false)
-    const {addReply} = useContext(AppContext)
+    const {addReply, onEditComment} = useContext(AppContext)
+    const [isEditing, setIsEditing] = useState(false)
 
+    const editor = useEditor({
+        extensions: [StarterKit],
+        content: comment.content,
+        editorProps: {
+            attributes: {
+                class: "border border-grayish-blue p-2 rounded-lg outline-none h-24 overflow-y-scroll my-4",
+            },
+        },
+        immediatelyRender: false
+    })
 
     return (
         <div>
             <div className={"bg-white p-4 rounded-xl"}>
                 <Header author={comment.user}/>
-                <Content content={comment.content}/>
+                {isEditing ? (
+                    <>
+                        <EditorContent editor={editor}/>
+                    </>
+                ) : <Content content={comment.content}/>}
                 <Footer commentId={comment.id} author={comment.user} score={comment.score}
-                        toggleReplyInputVisibility={() => setReplyInputIsVisible(prev => !prev)}/>
+                        toggleReplyInputVisibility={() => setReplyInputIsVisible(prev => !prev)}
+                        isEditing={isEditing}
+                        onUpdate={() => {
+                            if (!editor?.getText()) {
+                                return
+                            }
+                            onEditComment(editor.getText(), comment.id)
+                            setIsEditing(false)
+                        }}
+                        canUpdate={isEditing && (editor !== null && editor.getText().length > 0)}
+                        toggleIsEditing={() => setIsEditing(prev => !prev)
+                        }
+                />
             </div>
             <ReplyInput isVisible={replyInputIsVisible} replyingTo={comment.user} user={user} commentId={comment.id}
                         addReply={(content, commentId) => {
@@ -80,12 +108,26 @@ type FooterProps = {
     replyId?: number,
     author: User,
     score: number,
-    onDelete?: () => void,
+    isEditing: boolean,
+    canUpdate: boolean,
     toggleReplyInputVisibility: () => void,
+    onUpdate: () => void,
+    toggleIsEditing?: () => void,
+    onDelete?: () => void,
 }
 
-function Footer({commentId, replyId, author, score, toggleReplyInputVisibility}: FooterProps) {
-    const {user, openDeleteModal, onEditComment, voteMessage} = useContext(AppContext)
+function Footer({
+                    commentId,
+                    replyId,
+                    author,
+                    score,
+                    canUpdate,
+                    onUpdate,
+                    isEditing,
+                    toggleReplyInputVisibility,
+                    toggleIsEditing
+                }: FooterProps) {
+    const {user, openDeleteModal, voteMessage} = useContext(AppContext)
 
     return <div className={"flex justify-between items-center"}>
         <div className={"flex bg-light-gray items-center gap-4 rounded-lg py-2 px-4"}>
@@ -97,17 +139,24 @@ function Footer({commentId, replyId, author, score, toggleReplyInputVisibility}:
                 <Image src={"/images/icon-plus.svg"} alt={"up-vote"} height={10} width={10}/>
             </button>
         </div>
-        {user?.username == author.username ? (
-            <div className={"flex gap-4"}>
-                <IconButton label={"Delete"} iconPath={"/images/icon-delete.svg"}
-                            labelClassName={"text-soft-red"}
-                            onClick={() => openDeleteModal(commentId, replyId)}/>
-                <IconButton label={"Edit"} iconPath={"/images/icon-edit.svg"}
-                            labelClassName={"text-moderate-blue"}
-                            onClick={() => onEditComment(commentId)}
-                />
-            </div>
-        ) : (
+        {user?.username == author.username ? isEditing ?
+            (
+                <button className={"bg-moderate-blue  text-white rounded-lg disabled:bg-grayish-blue"}
+                        onClick={onUpdate}
+                        disabled={!canUpdate}>
+                    <div className={"py-2 px-8"}>UPDATE</div>
+                </button>
+            ) : (
+                <div className={"flex gap-4"}>
+                    <IconButton label={"Delete"} iconPath={"/images/icon-delete.svg"}
+                                labelClassName={"text-soft-red"}
+                                onClick={() => openDeleteModal(commentId, replyId)}/>
+                    <IconButton label={"Edit"} iconPath={"/images/icon-edit.svg"}
+                                labelClassName={"text-moderate-blue"}
+                                onClick={toggleIsEditing}
+                    />
+                </div>
+            ) : (
             <IconButton
                 label={"Reply"}
                 iconPath={"/images/icon-reply.svg"}
@@ -126,16 +175,43 @@ type ReplyCardProps = {
 
 function ReplyCard({commentId, reply, onDelete}: ReplyCardProps) {
     const [replyInputIsVisible, setReplyInputIsVisible] = useState(false)
-    const {user, addReply} = useContext(AppContext)
+    const {user, addReply, onEditReply} = useContext(AppContext)
+    const [isEditing, setIsEditing] = useState(false)
+
+    const editor = useEditor({
+        extensions: [StarterKit],
+        content: reply.content,
+        editorProps: {
+            attributes: {
+                class: "border border-grayish-blue p-2 rounded-lg outline-none h-24 overflow-y-scroll my-4",
+            },
+        },
+        immediatelyRender: false
+    })
 
     return <div>
         <div className={"bg-white p-4 rounded-xl my-4"}>
             <Header author={reply.user}/>
-            <Content content={reply.content} replyingTo={reply.replyingTo}/>
-            <Footer commentId={commentId} replyId={reply.id}
-                    author={reply.user} score={reply.score}
+            {isEditing ? (
+                <>
+                    <EditorContent editor={editor}/>
+                </>
+            ) : <Content content={reply.content}/>}
+            <Footer commentId={reply.id} author={reply.user} score={reply.score}
+                    toggleReplyInputVisibility={() => setReplyInputIsVisible(prev => !prev)}
+                    isEditing={isEditing}
                     onDelete={onDelete}
-                    toggleReplyInputVisibility={() => setReplyInputIsVisible(prev => !prev)}/>
+                    onUpdate={() => {
+                        if (!editor?.getText()) {
+                            return
+                        }
+                        onEditReply(editor.getText(), commentId, reply.id)
+                        setIsEditing(false)
+                    }}
+                    canUpdate={isEditing && (editor !== null && editor.getText().length > 0)}
+                    toggleIsEditing={() => setIsEditing(prev => !prev)
+                    }
+            />
         </div>
         <ReplyInput isVisible={replyInputIsVisible} replyingTo={reply.user}
                     user={user!} commentId={commentId}

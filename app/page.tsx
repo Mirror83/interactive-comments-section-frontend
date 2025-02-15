@@ -75,8 +75,30 @@ export default function Home() {
         }))
     }
 
-    function onEditComment() {
+    function onEditReply(content: string, commentId: number, replyId: number) {
+        console.log("Editing reply...")
+        setComments(comments => comments.map(comment => {
+            if (comment.id === commentId) {
+                const replies = comment.replies.map(reply => {
+                    if (reply.id === replyId) {
+                        return {...reply, content}
+                    }
+                    return reply
+                })
+                return {...comment, replies}
+            }
+            return comment
+        }))
+    }
+
+    function onEditComment(content: string, commentId: number) {
         console.log("Editing comment...");
+        setComments(comments => comments.map(comment => {
+            if (comment.id === commentId) {
+                return {...comment, content}
+            }
+            return comment
+        }))
     }
 
     function deleteComment(id: number) {
@@ -139,7 +161,7 @@ export default function Home() {
     }
 
     return (
-        <AppContext value={{user: user, openDeleteModal, onEditComment, voteMessage, addReply}}>
+        <AppContext value={{user: user, openDeleteModal, onEditComment, onEditReply, voteMessage, addReply}}>
             <div className={"p-4 flex flex-col h-screen"}>
                 <div className={"flex flex-1 flex-col gap-4 overflow-y-scroll"}>
                     {comments.map((comment) => (
