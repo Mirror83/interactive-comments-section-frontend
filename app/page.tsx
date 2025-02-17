@@ -1,6 +1,6 @@
 "use client";
 
-import CommentCard from "@/components/CommentCard";
+import MessageCard from "@/components/MessageCard";
 import {Comment, comments as allComments, Reply, User} from "@/mock-data/data";
 import CommentInput from "@/components/CommentInput";
 import {DeleteConfirmationModal} from "@/components/Modal";
@@ -34,7 +34,6 @@ export default function Home() {
     }
 
     function openDeleteModal(commentId: number, replyId: number | undefined) {
-        console.log("Opening Modal...");
         setIsModalVisible(true);
         setTargetMsg({commentId: commentId, replyId});
         console.log({commentId, replyId});
@@ -76,7 +75,6 @@ export default function Home() {
     }
 
     function onEditReply(content: string, commentId: number, replyId: number) {
-        console.log("Editing reply...")
         setComments(comments => comments.map(comment => {
             if (comment.id === commentId) {
                 const replies = comment.replies.map(reply => {
@@ -92,7 +90,6 @@ export default function Home() {
     }
 
     function onEditComment(content: string, commentId: number) {
-        console.log("Editing comment...");
         setComments(comments => comments.map(comment => {
             if (comment.id === commentId) {
                 return {...comment, content}
@@ -162,24 +159,25 @@ export default function Home() {
 
     return (
         <AppContext value={{user: user, openDeleteModal, onEditComment, onEditReply, voteMessage, addReply}}>
-            <div className={"p-4 flex flex-col h-screen"}>
-                <div className={"flex flex-1 flex-col gap-4 overflow-y-scroll"}>
-                    {comments.map((comment) => (
-                            <CommentCard
-                                comment={comment}
-                                user={user}
-                                key={comment.id}
-                            />
-                        )
-                    )}
+            <div className={"p-4 flex flex-col h-screen items-center"}>
+                <div className={"md:w-9/12"}>
+                    <div className={"flex flex-1 flex-col gap-4 overflow-y-scroll"}>
+                        {comments.map((comment) => (
+                                <MessageCard
+                                    comment={comment}
+                                    user={user}
+                                    key={comment.id}
+                                />
+                            )
+                        )}
+                    </div>
+                    <CommentInput user={user} addComment={addComment}/>
                 </div>
-                <CommentInput user={user} addComment={addComment}/>
                 <DeleteConfirmationModal isVisible={isModalVisible}
                                          onClose={closeDeleteModal}
                                          onConfirm={() =>
                                              onConfirmMsgDeletion(targetMsg!.commentId, targetMsg!.replyId)}/>
             </div>
         </AppContext>
-
     );
 }
