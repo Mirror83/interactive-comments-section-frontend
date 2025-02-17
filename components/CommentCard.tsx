@@ -2,10 +2,11 @@ import React, {useContext, useState} from 'react';
 import Image from "next/image";
 import type {Comment, Reply, User} from "@/mock-data/data"
 import IconButton from "@/components/IconButton";
-import AppContext, {VoteType} from "@/context/app-context";
+import AppContext from "@/context/app-context";
 import ReplyInput from "@/components/ReplyInput";
 import {EditorContent, useEditor} from "@tiptap/react";
 import {StarterKit} from "@tiptap/starter-kit";
+import ScoreWidget from "@/components/ScoreWidget"
 
 type CommentCardProps = {
     user: User,
@@ -49,8 +50,7 @@ function CommentCard({user, comment, onDelete}: CommentCardProps) {
                             setIsEditing(false)
                         }}
                         canUpdate={isEditing && (editor !== null && editor.getText().length > 0)}
-                        toggleIsEditing={() => setIsEditing(prev => !prev)
-                        }
+                        toggleIsEditing={() => setIsEditing(prev => !prev)}
                 />
             </div>
             <ReplyInput isVisible={replyInputIsVisible} replyingTo={comment.user} user={user} commentId={comment.id}
@@ -127,18 +127,10 @@ function Footer({
                     toggleReplyInputVisibility,
                     toggleIsEditing
                 }: FooterProps) {
-    const {user, openDeleteModal, voteMessage} = useContext(AppContext)
+    const {user, openDeleteModal} = useContext(AppContext)
 
     return <div className={"flex justify-between items-center"}>
-        <div className={"flex bg-light-gray items-center gap-4 rounded-lg py-2 px-4"}>
-            <button onClick={() => voteMessage(commentId, replyId, VoteType.DOWN_VOTE)}>
-                <Image src={"/images/icon-minus.svg"} alt={"down-vote"} height={10} width={10}/>
-            </button>
-            <span className={"text-moderate-blue font-[500]"}>{score}</span>
-            <button onClick={() => voteMessage(commentId, replyId, VoteType.UP_VOTE)}>
-                <Image src={"/images/icon-plus.svg"} alt={"up-vote"} height={10} width={10}/>
-            </button>
-        </div>
+        <ScoreWidget score={score} commentId={commentId} replyId={replyId}/>
         {user?.username == author.username ? isEditing ?
             (
                 <button className={"bg-moderate-blue  text-white rounded-lg disabled:bg-grayish-blue"}
@@ -149,9 +141,11 @@ function Footer({
             ) : (
                 <div className={"flex gap-4"}>
                     <IconButton label={"Delete"} iconPath={"/images/icon-delete.svg"}
+                                height={14} width={12}
                                 labelClassName={"text-soft-red"}
                                 onClick={() => openDeleteModal(commentId, replyId)}/>
                     <IconButton label={"Edit"} iconPath={"/images/icon-edit.svg"}
+                                height={14} width={14}
                                 labelClassName={"text-moderate-blue"}
                                 onClick={toggleIsEditing}
                     />
@@ -160,6 +154,7 @@ function Footer({
             <IconButton
                 label={"Reply"}
                 iconPath={"/images/icon-reply.svg"}
+                height={13} width={14}
                 labelClassName={"text-moderate-blue"}
                 onClick={toggleReplyInputVisibility}
             />
@@ -197,7 +192,7 @@ function ReplyCard({commentId, reply, onDelete}: ReplyCardProps) {
                     <EditorContent editor={editor}/>
                 </>
             ) : <Content content={reply.content}/>}
-            <Footer commentId={reply.id} author={reply.user} score={reply.score}
+            <Footer commentId={commentId} replyId={reply.id} author={reply.user} score={reply.score}
                     toggleReplyInputVisibility={() => setReplyInputIsVisible(prev => !prev)}
                     isEditing={isEditing}
                     onDelete={onDelete}
