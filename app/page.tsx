@@ -173,10 +173,12 @@ export default function Home() {
                     </div>
                     <CommentInput user={user} addComment={addComment}/>
                 </div>
-                <DeleteConfirmationModal isVisible={isModalVisible}
-                                         onClose={closeDeleteModal}
-                                         onConfirm={() =>
-                                             onConfirmMsgDeletion(targetMsg!.commentId, targetMsg!.replyId)}/>
+                <DeleteConfirmationModal
+                    targetMsg={targetMsg}
+                    isVisible={isModalVisible}
+                    onClose={closeDeleteModal}
+                    onConfirm={() =>
+                        onConfirmMsgDeletion(targetMsg!.commentId, targetMsg!.replyId)}/>
             </div>
         </AppContext>
     );

@@ -7,9 +7,10 @@ type ModalProps = {
     onConfirm?: () => void;
     isVisible?: boolean;
     children?: React.ReactNode;
+    className?: string;
 }
 
-function Modal({isVisible, onClose, children}: ModalProps) {
+function Modal({isVisible, onClose, className, children}: ModalProps) {
     const modalRef = useRef<HTMLDialogElement>(null);
 
 
@@ -33,26 +34,35 @@ function Modal({isVisible, onClose, children}: ModalProps) {
     }, [isVisible, onClose]);
 
     return (
-        <dialog ref={modalRef} className={"backdrop:bg-black/50 backdrop:backdrop-blur-sm"}>
+        <dialog ref={modalRef}
+                className={`backdrop:bg-black/50 backdrop:backdrop-blur-sm ${className ? className : ""}`}>
             {children}
         </dialog>
     );
 }
 
-export function DeleteConfirmationModal(props: Omit<ModalProps, "children">) {
-    return <Modal {...props}>
-        <div className={"flex flex-col h-full items-center justify-center px-4 rounded-lg"}>
-            <div className={"bg-white rounded-xl flex flex-col gap-4 p-8"}
-                 onClick={e => e.stopPropagation()}>
-                <h2 className={"font-bold text-lg"}>Delete Comment</h2>
+type DeleteConfirmationModalProps = Omit<ModalProps, "children"> & {
+    targetMsg?: { commentId: number, replyId?: number }
+}
+
+export function DeleteConfirmationModal({targetMsg, ...rest}: DeleteConfirmationModalProps) {
+    return <Modal className={"bg-white rounded-lg p-8 max-w-96"} {...rest}>
+        <div
+            className={"flex flex-col gap-4"}
+            onClick={e => e.stopPropagation()}>
+            {targetMsg ? <>
+                <h2 className={"font-bold text-lg"}>Delete {targetMsg.replyId ? "Reply" : "Comment"}</h2>
                 <p className={"text-grayish-blue"}>
-                    Are you sure you want to delete this comment?
-                    This will remove the comment and can&apos;t be undone.
+                    Are you sure you want to delete this {targetMsg.replyId ? "reply" : "comment"}?
+                    This will remove the {targetMsg.replyId ? "reply" : "comment"} and can&apos;t be undone.
                 </p>
-                <div className={"flex gap-4 items-center justify-between"}>
-                    <ActionButton onClick={props.onClose} action={"cancel"}>NO, CANCEL</ActionButton>
-                    <ActionButton onClick={props.onConfirm} action={"confirm"}>YES, DELETE</ActionButton>
-                </div>
+            </> : <p className={"text-grayish-blue"}>This dialog should not be open</p>
+            }
+
+            <div className={"flex gap-4 items-center justify-between"}>
+                <ActionButton onClick={rest.onClose}
+                              action={"cancel"}>{targetMsg ? "NO, CANCEL" : "CLOSE"}</ActionButton>
+                {targetMsg && <ActionButton onClick={rest.onConfirm} action={"confirm"}>YES, DELETE</ActionButton>}
             </div>
         </div>
     </Modal>
