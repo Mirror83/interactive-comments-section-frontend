@@ -36,7 +36,7 @@ function MessageCard({user, comment, reply, className}: MessageCardProps) {
             <div className={"flex items-center gap-4 bg-white p-4 rounded-xl"}>
                 <ScoreWidget score={reply ? reply.score : comment.score} commentId={comment.id} replyId={reply?.id}
                              className={"w-12 flex-grow-0 flex-shrink-0 flex-col items-center rounded-xl max-h-max hidden sm:flex"}/>
-                <div>
+                <div className={"w-full"}>
                     <Header author={reply ? reply.user : comment.user}/>
                     {isEditing ? (
                         <>
