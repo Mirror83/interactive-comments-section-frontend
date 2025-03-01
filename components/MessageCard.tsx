@@ -76,7 +76,8 @@ function MessageCard({user, comment, reply, className}: MessageCardProps) {
                                 disabled={!canUpdateMessage()}>Update
                             </button>
                         </div>
-                    ) : <Content content={reply ? reply.content : comment.content}/>}
+                    ) : <Content content={reply ? reply.content : comment.content}
+                                 replyingTo={reply?.replyingTo}/>}
                     <Footer commentId={comment.id}
                             replyId={reply?.id}
                             author={reply ? reply.user : comment.user}
