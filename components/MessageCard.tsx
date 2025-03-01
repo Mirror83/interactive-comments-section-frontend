@@ -90,7 +90,8 @@ function MessageCard({user, comment, reply, className}: MessageCardProps) {
                     />
                 </div>
             </div>
-            <ReplyInput isVisible={replyInputIsVisible} replyingTo={comment.user} user={user} commentId={comment.id}
+            <ReplyInput isVisible={replyInputIsVisible} replyingTo={reply ? reply.user : comment.user} user={user}
+                        commentId={comment.id}
                         addReply={(content, commentId) => {
                             addReply(content, commentId)
                             setReplyInputIsVisible(false)
