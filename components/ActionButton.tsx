@@ -9,7 +9,7 @@ type ActionButtonProps = {
 function ActionButton({onClick, action, children}: ActionButtonProps) {
     return (
         <button
-            className={`py-4 min-w-[150px] text-white rounded-lg ${action === "confirm" ? "bg-soft-red" : "bg-grayish-blue"}`}
+            className={`py-3 min-w-[150px] text-white rounded-lg ${action === "confirm" ? "bg-soft-red" : "bg-grayish-blue"}`}
             onClick={onClick}>
             {children}
         </button>
