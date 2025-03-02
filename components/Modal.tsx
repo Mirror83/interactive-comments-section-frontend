@@ -21,7 +21,7 @@ function Modal({isVisible, onClose, className, children}: ModalProps) {
             }
         }
         document.addEventListener("keypress", (e) => handleEscape(e));
-        return document.removeEventListener("keypress", handleEscape);
+        return () => document.removeEventListener("keypress", handleEscape);
     }, [onClose]);
 
     useEffect(() => {
