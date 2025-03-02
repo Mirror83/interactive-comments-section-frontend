@@ -130,7 +130,7 @@ export default function Home() {
         const comment: Comment = {
             user,
             content,
-            createdAt: Date(),
+            createdAt: new Date().toISOString(),
             score: 0,
             replies: [],
             id: comments[comments.length - 1].id + 1
@@ -145,7 +145,7 @@ export default function Home() {
                 const reply: Reply = {
                     user,
                     content,
-                    createdAt: Date(),
+                    createdAt: new Date().toISOString(),
                     score: 0,
                     id: replies.length > 0 ? replies[replies.length - 1].id + 1 : 1,
                     replyingTo: comment.user.username

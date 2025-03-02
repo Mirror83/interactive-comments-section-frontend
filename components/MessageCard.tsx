@@ -7,6 +7,7 @@ import ReplyInput from "@/components/ReplyInput";
 import {EditorContent, useEditor} from "@tiptap/react";
 import {StarterKit} from "@tiptap/starter-kit";
 import ScoreWidget from "@/components/ScoreWidget"
+import {formatDistanceToNow} from "date-fns";
 
 type MessageCardProps = {
     user: User,
@@ -62,6 +63,7 @@ function MessageCard({user, comment, reply, className}: MessageCardProps) {
                              className={"w-12 flex-grow-0 flex-shrink-0 flex-col items-center rounded-xl max-h-max hidden sm:flex"}/>
                 <div className={"w-full"}>
                     <Header author={reply ? reply.user : comment.user}
+                            msgCreatedAt={reply ? reply.createdAt : comment.createdAt}
                             toggleReplyInputVisibility={toggleReplyInputVisibility}
                             isEditing={isEditing}
                             toggleIsEditing={toggleIsEditing}
@@ -113,14 +115,19 @@ function MessageCard({user, comment, reply, className}: MessageCardProps) {
 
 type HeaderProps = {
     author: User,
+    msgCreatedAt: string,
     isEditing: boolean,
     toggleReplyInputVisibility: () => void,
     toggleIsEditing?: () => void,
     onDelete?: () => void,
 }
 
-function Header({author, toggleIsEditing, toggleReplyInputVisibility, onDelete}: HeaderProps) {
+function Header({author, msgCreatedAt, toggleIsEditing, toggleReplyInputVisibility, onDelete}: HeaderProps) {
     const {user} = useContext(AppContext);
+
+    const displayDate = formatDistanceToNow(new Date(msgCreatedAt), {
+        addSuffix: true,
+    });
 
     return <div className={"flex items-center justify-between w-full"}>
         <div className={"flex items-center gap-4"}>
@@ -132,7 +139,8 @@ function Header({author, toggleIsEditing, toggleReplyInputVisibility, onDelete}:
             <span className={"font-bold"}>{author.username}</span>
             {user?.username == author.username &&
                 <span className={"py-1 px-2 text-sm bg-moderate-blue rounded text-white font-[500]"}>you</span>}
-            <span className={"text-grayish-blue font-light"}>1 month ago</span>
+            <span
+                className={"text-grayish-blue font-light"}>{displayDate}</span>
         </div>
         <div className={"hidden sm:block"}>
             {user?.username == author.username ?
