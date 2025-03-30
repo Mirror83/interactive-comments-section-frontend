@@ -1,6 +1,8 @@
 import React, { useContext, useState } from "react";
 import AppContext, { VoteType } from "@/context/app-context";
-import Image from "next/image";
+
+import IconPlus from "@/app/assets/svg/icon-plus.svg";
+import IconMinus from "@/app/assets/svg/icon-minus.svg";
 
 type ScoreWidgetProps = {
   score: number;
@@ -10,8 +12,7 @@ type ScoreWidgetProps = {
 };
 
 type VoteButtonProps = {
-  imageSrc: string;
-  imageAlt: string;
+  Icon: React.FC<React.SVGProps<SVGElement>>;
   onClick: () => void;
   className?: string;
 };
@@ -31,20 +32,15 @@ function ScoreWidget({
     setCurrentVoteType(newVoteType);
   }
 
-  function VoteButton({
-    imageSrc,
-    imageAlt,
-    onClick,
-    className,
-  }: VoteButtonProps) {
+  function VoteButton({ Icon, onClick, className }: VoteButtonProps) {
     return (
       <button
         onClick={onClick}
-        className={`w-full flex flex-col items-center justify-center p-2 ${
+        className={`group w-full flex flex-col items-center justify-center p-2 ${
           className ?? ""
         }`}
       >
-        <Image src={imageSrc} alt={imageAlt} height={3} width={11} />
+        <Icon className="fill-light-grayish-blue group-hover:fill-moderate-blue" />
       </button>
     );
   }
@@ -55,23 +51,9 @@ function ScoreWidget({
         className ?? ""
       }`}
     >
-      <VoteButton
-        imageSrc={"images/icon-plus.svg"}
-        imageAlt={"upvote"}
-        onClick={() => vote(VoteType.UP_VOTE)}
-        className={`border border-moderate-blue rounded ${
-          currentVoteType === VoteType.UP_VOTE && "bg-moderate-blue"
-        }`}
-      />
+      <VoteButton Icon={IconPlus} onClick={() => vote(VoteType.UP_VOTE)} />
       <span className={"text-moderate-blue font-[500]"}>{score}</span>
-      <VoteButton
-        imageSrc={"images/icon-minus.svg"}
-        imageAlt={"downvote"}
-        onClick={() => vote(VoteType.DOWN_VOTE)}
-        className={`border border-moderate-blue rounded ${
-          currentVoteType === VoteType.DOWN_VOTE && "bg-moderate-blue"
-        }`}
-      />
+      <VoteButton Icon={IconMinus} onClick={() => vote(VoteType.DOWN_VOTE)} />
     </div>
   );
 }
