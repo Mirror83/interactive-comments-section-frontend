@@ -8,10 +8,10 @@ export enum VoteType {
 
 type AppContextObject = {
   user?: User;
-  openDeleteModal: (commentId: number, replyId: number | undefined) => void;
+  openDeleteModal: (commentId: number, replyId?: number) => void;
   voteMessage: (
     commentId: number,
-    replyId: number | undefined,
+    replyId?: number,
     voteType?: VoteType,
     currentVoteType?: VoteType
   ) => void;

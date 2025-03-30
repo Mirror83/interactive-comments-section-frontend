@@ -33,7 +33,7 @@ export default function Home() {
    */
   const [targetMsg, setTargetMsg] = useState<{
     commentId: number;
-    replyId: number | undefined;
+    replyId?: number;
   }>();
 
   function closeDeleteModal() {
@@ -41,7 +41,7 @@ export default function Home() {
     setIsModalVisible(false);
   }
 
-  function openDeleteModal(commentId: number, replyId: number | undefined) {
+  function openDeleteModal(commentId: number, replyId?: number) {
     setIsModalVisible(true);
     setTargetMsg({ commentId: commentId, replyId });
     console.log({ commentId, replyId });
@@ -49,7 +49,7 @@ export default function Home() {
 
   function voteMessage(
     commentId: number,
-    replyId: number | undefined,
+    replyId?: number,
     voteType?: VoteType,
     currentVoteType?: VoteType
   ) {
@@ -188,10 +188,7 @@ export default function Home() {
     );
   }
 
-  function onConfirmMsgDeletion(
-    commentId: number,
-    replyId: number | undefined
-  ) {
+  function onConfirmMsgDeletion(commentId: number, replyId?: number) {
     if (replyId) {
       deleteReply(commentId, replyId);
     } else {
