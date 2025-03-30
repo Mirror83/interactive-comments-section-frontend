@@ -13,6 +13,7 @@ type ScoreWidgetProps = {
 
 type VoteButtonProps = {
   Icon: React.FC<React.SVGProps<SVGElement>>;
+  type: VoteType;
   onClick: () => void;
   className?: string;
 };
@@ -40,7 +41,14 @@ function ScoreWidget({
           className ?? ""
         }`}
       >
-        <Icon className="fill-light-grayish-blue group-hover:fill-moderate-blue" />
+        <Icon
+          className="fill-light-grayish-blue group-hover:fill-moderate-blue"
+          aria-hidden="true"
+          focusable="false"
+        />
+        <span className="sr-only">{`${
+          currentVoteType === VoteType.UP_VOTE ? "Upvote" : "Downvote"
+        }`}</span>
       </button>
     );
   }
@@ -51,9 +59,17 @@ function ScoreWidget({
         className ?? ""
       }`}
     >
-      <VoteButton Icon={IconPlus} onClick={() => vote(VoteType.UP_VOTE)} />
+      <VoteButton
+        Icon={IconPlus}
+        type={VoteType.UP_VOTE}
+        onClick={() => vote(VoteType.UP_VOTE)}
+      />
       <span className={"text-moderate-blue font-[500]"}>{score}</span>
-      <VoteButton Icon={IconMinus} onClick={() => vote(VoteType.DOWN_VOTE)} />
+      <VoteButton
+        Icon={IconMinus}
+        type={VoteType.DOWN_VOTE}
+        onClick={() => vote(VoteType.DOWN_VOTE)}
+      />
     </div>
   );
 }
