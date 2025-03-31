@@ -39,7 +39,7 @@ export default function ReplyInput({
       editorProps: {
         attributes: {
           class:
-            "border border-grayish-blue p-4 rounded-lg outline-none h-24 overflow-y-scroll",
+            "border focus:border-moderate-blue border-grayish-blue p-4 rounded-lg outline-none h-24 overflow-y-scroll",
         },
       },
       immediatelyRender: false,

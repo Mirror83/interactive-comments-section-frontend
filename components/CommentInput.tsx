@@ -39,7 +39,7 @@ export default function CommentInput({ user, addComment }: CommentInputProps) {
         />
         <textarea
           className={
-            "h-20 border rounded-xl py-2 px-4 border-grayish-blue outline-none hidden lg:block w-full"
+            "h-20 border rounded-xl py-2 px-4 focus:border-moderate-blue border-grayish-blue outline-none hidden lg:block w-full"
           }
           name={"comment"}
           placeholder={"Add a comment..."}
@@ -50,7 +50,7 @@ export default function CommentInput({ user, addComment }: CommentInputProps) {
         />
         <button
           className={
-            "bg-moderate-blue  text-white rounded-lg disabled:bg-grayish-blue hover:opacity-70 hover:disabled:opacity-100"
+            "bg-moderate-blue text-white rounded-lg disabled:bg-grayish-blue hover:opacity-70 hover:disabled:opacity-100"
           }
           onClick={onSendComment}
           disabled={commentInput.length === 0}
