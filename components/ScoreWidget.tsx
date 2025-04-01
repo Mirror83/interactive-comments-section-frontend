@@ -13,8 +13,9 @@ type ScoreWidgetProps = {
 
 type VoteButtonProps = {
   Icon: React.FC<React.SVGProps<SVGElement>>;
-  type: VoteType;
+  voteType: VoteType;
   onClick: () => void;
+  currentVoteType?: VoteType;
   className?: string;
 };
 
@@ -52,16 +53,24 @@ function ScoreWidget({
     setCurrentVoteType(newVoteType);
   }
 
-  function VoteButton({ Icon, onClick, className }: VoteButtonProps) {
+  function VoteButton({
+    Icon,
+    onClick,
+    voteType: type,
+    className,
+    currentVoteType,
+  }: VoteButtonProps) {
     return (
       <button
         onClick={onClick}
-        className={`group w-full flex flex-col items-center justify-center p-2 ${
+        className={`group w-full flex flex-col items-center justify-center p-2  ${
           className ?? ""
         }`}
       >
         <Icon
-          className="fill-light-grayish-blue group-hover:fill-moderate-blue"
+          className={`fill-light-grayish-blue ${
+            Object.is(currentVoteType, type) && "fill-moderate-blue"
+          } group-hover:fill-moderate-blue group-active:animate-pulse`}
           aria-hidden="true"
           focusable="false"
         />
@@ -80,13 +89,23 @@ function ScoreWidget({
     >
       <VoteButton
         Icon={IconPlus}
-        type={VoteType.UP_VOTE}
+        voteType={VoteType.UP_VOTE}
+        currentVoteType={currentVoteType}
         onClick={() => vote(VoteType.UP_VOTE)}
       />
-      <span className={"text-moderate-blue font-[500]"}>{score}</span>
+      <span
+        className={`${
+          typeof currentVoteType === "undefined"
+            ? "text-light-grayish-blue"
+            : "text-moderate-blue"
+        } font-[500]`}
+      >
+        {score}
+      </span>
       <VoteButton
         Icon={IconMinus}
-        type={VoteType.DOWN_VOTE}
+        currentVoteType={currentVoteType}
+        voteType={VoteType.DOWN_VOTE}
         onClick={() => vote(VoteType.DOWN_VOTE)}
       />
     </div>
