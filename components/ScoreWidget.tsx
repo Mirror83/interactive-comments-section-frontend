@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import AppContext, { VoteType } from "@/context/app-context";
+import { CommentDispatchContext, VoteType } from "@/context/app-context";
 
 import IconPlus from "@/app/assets/svg/icon-plus.svg";
 import IconMinus from "@/app/assets/svg/icon-minus.svg";
@@ -24,12 +24,31 @@ function ScoreWidget({
   replyId,
   className,
 }: ScoreWidgetProps) {
-  const { voteMessage } = useContext(AppContext);
   const [currentVoteType, setCurrentVoteType] = useState<VoteType>();
+  const { dispatch } = useContext(CommentDispatchContext);
 
   function vote(voteType: VoteType) {
     const newVoteType = voteType === currentVoteType ? undefined : voteType;
-    voteMessage(commentId, replyId, newVoteType, currentVoteType);
+    if (replyId) {
+      dispatch({
+        type: "vote_reply",
+        payload: {
+          commentId,
+          replyId,
+          currentVoteType,
+          voteType: newVoteType,
+        },
+      });
+    } else {
+      dispatch({
+        type: "vote_comment",
+        payload: {
+          commentId,
+          currentVoteType,
+          voteType: newVoteType,
+        },
+      });
+    }
     setCurrentVoteType(newVoteType);
   }
 

@@ -6,23 +6,25 @@ import { Paragraph } from "@tiptap/extension-paragraph";
 import History from "@tiptap/extension-history";
 import { Text } from "@tiptap/extension-text";
 import { Mention } from "@tiptap/extension-mention";
+import { CommentContext } from "@/context/app-context";
+import { useContext } from "react";
 
 type ReplyInputProps = {
   isVisible: boolean;
   replyingTo: User;
-  user: User;
   commentId: number;
   replyId?: number;
-  addReply: (content: string, commentId: number) => void;
+  addReply: (content: string, commentId: number, replyingTo: string) => void;
 };
 
 export default function ReplyInput({
   replyingTo,
   isVisible,
-  user,
   commentId,
   addReply,
 }: ReplyInputProps) {
+  const { user } = useContext(CommentContext);
+
   const editor = useEditor(
     {
       extensions: [
@@ -57,7 +59,7 @@ export default function ReplyInput({
 
     let content = editor.getText();
     content = content.replace(`@${replyingTo.username}`, "").trimStart();
-    addReply(content, commentId);
+    addReply(content, commentId, replyingTo.username);
 
     editor?.commands.clearContent();
     editor?.commands.setContent(
@@ -76,8 +78,8 @@ export default function ReplyInput({
       <EditorContent editor={editor} />
       <div className={"flex justify-between items-center gap-4"}>
         <Image
-          src={user.image.png}
-          alt={`${user.username} profile avatar`}
+          src={user!.image.png}
+          alt={`${user!.username} profile avatar`}
           height={40}
           width={40}
         />

@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import Image from "next/image";
 import type { Comment, Reply, User } from "@/mock-data/data";
 import IconButton from "@/components/IconButton";
-import AppContext from "@/context/app-context";
+import { CommentContext, CommentDispatchContext } from "@/context/app-context";
 import ReplyInput from "@/components/ReplyInput";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
@@ -10,17 +10,19 @@ import ScoreWidget from "@/components/ScoreWidget";
 import { formatDistanceToNow } from "date-fns";
 
 type MessageCardProps = {
-  user: User;
   comment: Comment;
   reply?: Reply;
   className?: string;
 };
 
-function MessageCard({ user, comment, reply, className }: MessageCardProps) {
+function MessageCard({ comment, reply, className }: MessageCardProps) {
+  const { user } = useContext(CommentContext);
+
   const [replyInputIsVisible, setReplyInputIsVisible] = useState(false);
-  const { addReply, onEditComment, onEditReply, openDeleteModal } =
-    useContext(AppContext);
+  const { openDeleteModal } = useContext(CommentContext);
   const [isEditing, setIsEditing] = useState(false);
+
+  const { dispatch } = useContext(CommentDispatchContext);
 
   const editor = useEditor({
     extensions: [StarterKit],
@@ -42,10 +44,24 @@ function MessageCard({ user, comment, reply, className }: MessageCardProps) {
     if (!editor?.getText()) {
       return;
     }
+    const content = editor.getText();
     if (!reply) {
-      onEditComment(editor.getText(), comment.id);
+      dispatch({
+        type: "edit_comment",
+        payload: {
+          content,
+          commentId: comment.id,
+        },
+      });
     } else {
-      onEditReply(editor.getText(), comment.id, reply.id);
+      dispatch({
+        type: "edit_reply",
+        payload: {
+          content,
+          commentId: comment.id,
+          replyId: reply.id,
+        },
+      });
     }
     setIsEditing(false);
   }
@@ -56,6 +72,11 @@ function MessageCard({ user, comment, reply, className }: MessageCardProps) {
 
   function toggleIsEditing() {
     setIsEditing((prev) => !prev);
+  }
+
+  if (!user) {
+    // Should go to some sign-up page or something of the sort
+    return null;
   }
 
   return (
@@ -114,10 +135,17 @@ function MessageCard({ user, comment, reply, className }: MessageCardProps) {
       <ReplyInput
         isVisible={replyInputIsVisible}
         replyingTo={reply ? reply.user : comment.user}
-        user={user}
         commentId={comment.id}
-        addReply={(content, commentId) => {
-          addReply(content, commentId);
+        addReply={(content, commentId, replyingTo) => {
+          dispatch({
+            type: "add_reply",
+            payload: {
+              user,
+              content,
+              commentId,
+              replyingTo,
+            },
+          });
           setReplyInputIsVisible(false);
         }}
       />
@@ -153,7 +181,7 @@ function Header({
   toggleReplyInputVisibility,
   onDelete,
 }: HeaderProps) {
-  const { user } = useContext(AppContext);
+  const { user } = useContext(CommentContext);
 
   const displayDate = formatDistanceToNow(new Date(msgCreatedAt), {
     addSuffix: true,
@@ -258,7 +286,7 @@ function Footer({
   toggleIsEditing,
   className,
 }: FooterProps) {
-  const { user, openDeleteModal } = useContext(AppContext);
+  const { user, openDeleteModal } = useContext(CommentContext);
 
   return (
     <div className={`flex justify-between items-center ${className ?? ""}`}>
@@ -315,16 +343,7 @@ type ReplyCardProps = {
 };
 
 function ReplyCard({ comment, reply, className }: ReplyCardProps) {
-  const { user } = useContext(AppContext);
-
-  return (
-    <MessageCard
-      user={user!}
-      comment={comment}
-      reply={reply}
-      className={className}
-    />
-  );
+  return <MessageCard comment={comment} reply={reply} className={className} />;
 }
 
 export default MessageCard;

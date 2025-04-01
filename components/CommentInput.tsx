@@ -1,19 +1,23 @@
-import { User } from "@/mock-data/data";
+import { CommentContext, CommentDispatchContext } from "@/context/app-context";
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
-type CommentInputProps = {
-  user: User;
-  addComment: (content: string) => void;
-};
-
-export default function CommentInput({ user, addComment }: CommentInputProps) {
+export default function CommentInput() {
   const [commentInput, setCommentInput] = useState("");
+
+  const { user } = useContext(CommentContext);
+  const { dispatch } = useContext(CommentDispatchContext);
 
   function onSendComment() {
     // To replace with actual validation on the
     // input itself
-    addComment(commentInput);
+    dispatch({
+      type: "add_comment",
+      payload: {
+        user: user!,
+        content: commentInput,
+      },
+    });
     setCommentInput("");
   }
 
@@ -32,8 +36,8 @@ export default function CommentInput({ user, addComment }: CommentInputProps) {
       />
       <div className={"flex justify-between items-center lg:items-start gap-4"}>
         <Image
-          src={user.image.png}
-          alt={`${user.username} profile avatar`}
+          src={user!.image.png}
+          alt={`${user!.username} profile avatar`}
           height={40}
           width={40}
         />
