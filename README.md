@@ -70,7 +70,7 @@ Not added yet
 
 ### Useful resources
 
-Not added yet
+[Extracting state logic into a reducer from React Documentation](https://react.dev/learn/extracting-state-logic-into-a-reducer)
 
 ## Author
 
