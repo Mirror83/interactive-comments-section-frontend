@@ -75,8 +75,8 @@ export default function Home() {
       }}
     >
       <CommentDispatchContext value={{ dispatch }}>
-        <div className={"p-4 flex flex-col h-screen items-center"}>
-          <div className={"md:w-9/12"}>
+        <div className={"px-4 py-8 flex flex-col h-screen items-center"}>
+          <div className={"max-w-3xl"}>
             <div className={"flex flex-1 flex-col gap-4 overflow-y-scroll"}>
               {state.map((comment) => (
                 <MessageCard comment={comment} key={comment.id} />
