@@ -75,7 +75,8 @@ export default function Home() {
       }}
     >
       <CommentDispatchContext value={{ dispatch }}>
-        <div className={"px-4 py-8 flex flex-col h-screen items-center"}>
+        <main className={"px-4 py-8 flex flex-col h-screen items-center"}>
+          <h1 className="sr-only">Interactive Comments Section</h1>
           <div className={"max-w-3xl"}>
             <div className={"flex flex-1 flex-col gap-4 overflow-y-scroll"}>
               {state.map((comment) => (
@@ -92,7 +93,7 @@ export default function Home() {
               onConfirmMsgDeletion(targetMsg!.commentId, targetMsg!.replyId)
             }
           />
-        </div>
+        </main>
       </CommentDispatchContext>
     </CommentContext>
   );
