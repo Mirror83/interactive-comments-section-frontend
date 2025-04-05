@@ -90,7 +90,7 @@ export default function ReplyInput({
           onClick={onSendReply}
           disabled={editor === null || editor.getText().length === 0}
         >
-          <div className={"py-2 px-8"}>REPLY</div>
+          <span className={"py-2 px-8"}>REPLY</span>
         </button>
       </div>
     </div>
