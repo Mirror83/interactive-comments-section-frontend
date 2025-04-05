@@ -150,7 +150,7 @@ function MessageCard({ comment, reply, className }: MessageCardProps) {
         }}
       />
       {!reply && (
-        <div className={"border-l-4 border-light-gray ps-4"}>
+        <div className={"border-l-4 border-light-gray ps-4 sm:ps-8"}>
           {comment.replies.map((reply) => (
             <ReplyCard
               key={reply.id}
