@@ -59,7 +59,7 @@ export default function CommentInput() {
           onClick={onSendComment}
           disabled={commentInput.length === 0}
         >
-          <div className={"py-2 px-8"}>SEND</div>
+          <span className={"py-2 px-8"}>SEND</span>
         </button>
       </div>
     </div>
